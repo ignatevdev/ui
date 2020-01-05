@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "baseUrl": ".",
+        "outDir": "./dist",
+        "lib": [
+            "es2017",
+            "es7",
+            "es6",
+            "dom"
+        ],
+        "noImplicitAny": true,
+        "module": "es6",
+        "target": "es5",
+        "jsx": "react",
+        "esModuleInterop": true,
+        /* Need to manually specify the typed modules, see
+           https://github.com/DefinitelyTyped/DefinitelyTyped/issues/34882 */
+        "types": [
+            "react",
+            "react-dom",
+            "styled-components",
+            "classnames",
+            "enzyme",
+            "enzyme-adapter-react-16",
+            "jest",
+        ]
+    }
+}
