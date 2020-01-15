@@ -2,12 +2,20 @@ import * as React from 'react';
 
 import {ButtonProps} from '../../src';
 
-import {Wrapper} from './styled';
+import {Wrapper, Loader, animationTimeout} from './styled';
 
 const Button = (props: ButtonProps) => {
-  return <Wrapper {...props} />;
+  const renderLoader = () => <Loader>Loading</Loader>;
+
+  return (
+    <Wrapper
+      {...props}
+      animationTimeout={animationTimeout}
+      renderLoader={renderLoader}
+    />
+  );
 };
 
 export {Button};
 
-export default Button;
+export default Button as React.FC<ButtonProps>;

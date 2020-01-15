@@ -10,7 +10,7 @@ COPY . .
 RUN yarn docs
 RUN ls
 
-FROM nginx
+FROM nginx:alpine
 # Copy needed files
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder docs /usr/share/nginx/html

@@ -7,12 +7,12 @@ const webpackConfig = require('./webpack.config.js');
 
 module.exports = {
   // We don't need styled components to be shown
-  ignore: ['**/styled.tsx'],
+  ignore: ['**/styled.tsx', '**/*.spec.tsx'],
   styleguideComponents: {
     // Context providers and global hooks
     Wrapper: path.join(__dirname, 'styleguide/Wrapper')
   },
-  components: ['./src/**/*.tsx', './styleguide/**/*.tsx'],
+  components: ['./styleguide/**/*.tsx'],
   // Only show components with stories
   skipComponentsWithoutExample: true,
   webpackConfig,
