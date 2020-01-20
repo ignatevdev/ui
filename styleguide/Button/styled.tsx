@@ -9,6 +9,7 @@ export const Wrapper = styled(Button)`
   background-color: #000;
   color: #fff;
   padding: 20px;
+  cursor: pointer;
 
   position: relative;
 
@@ -32,7 +33,7 @@ export const Wrapper = styled(Button)`
 
   .ui-button-loader-enter-active {
     opacity: 1;
-    transition: opacity 0.2s;
+    transition: opacity ${animationTimeout}ms;
   }
 
   .ui-button-loader-exit {
@@ -41,7 +42,7 @@ export const Wrapper = styled(Button)`
 
   .ui-button-loader-exit-active {
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: opacity ${animationTimeout}ms;
   }
 `;
 

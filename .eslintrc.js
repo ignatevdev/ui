@@ -22,6 +22,7 @@ module.exports = {
         'react/jsx-props-no-spreading': 0,
         'react/jsx-indent-props': 0,
         'react/jsx-filename-extension': 0,
+        'react/jsx-curly-newline': 0,
         'react/button-has-type': 0,
         'react/prop-types': 0,
         '@typescript-eslint/explicit-function-return-type': 0,
