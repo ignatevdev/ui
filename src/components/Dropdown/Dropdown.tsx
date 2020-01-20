@@ -27,7 +27,19 @@ export interface DropdownProps {
   animationTimeout?: number;
 }
 
-const PlacementListener = ({placement, children, onPlacement}: any) => {
+interface PlacementListenerProps {
+  placement?: Placement;
+
+  children: React.ReactNode;
+
+  onPlacement: (placement: Placement) => void;
+}
+
+const PlacementListener = ({
+  placement,
+  children,
+  onPlacement
+}: PlacementListenerProps): any => {
   React.useLayoutEffect(() => {
     if (placement) {
       onPlacement(placement);
@@ -60,48 +72,49 @@ const Dropdown = (props: DropdownProps) => {
    * we first render a dummy dropdown, save it's position,
    * and then render the <TransitionGroup /> with the position in place
    */
-  const dropdown = preCalculatedPlacement ? (
+  const dropdown = (
     <TransitionGroup component={null}>
-      {opened && (
-        <CSSTransition
-          timeout={animationTimeout}
-          className={classNames(`${prefixCls}-content`, className)}
-          classNames={`${prefixCls}-content`}
-          onExited={() => setPreCalculatedPlacement(null)}
-          in={opened}
-        >
-          <Popper placement={placement}>
-            {popperProps =>
-              renderContent({
-                ...popperProps,
-                // Fallback to pre-calculated position
-                placement: popperProps.placement || preCalculatedPlacement
-              })
-            }
-          </Popper>
-        </CSSTransition>
-      )}
+      {preCalculatedPlacement
+        ? opened && (
+            <CSSTransition
+              timeout={animationTimeout}
+              className={classNames(`${prefixCls}-content`, className)}
+              classNames={`${prefixCls}-content`}
+              onExited={() => setPreCalculatedPlacement(null)}
+            >
+              <Popper placement={placement}>
+                {popperProps =>
+                  renderContent({
+                    ...popperProps,
+                    // Fallback to pre-calculated position
+                    placement: popperProps.placement || preCalculatedPlacement
+                  })
+                }
+              </Popper>
+            </CSSTransition>
+          )
+        : opened && (
+            <Popper placement={placement}>
+              {popperProps => {
+                return (
+                  <PlacementListener
+                    placement={popperProps.placement}
+                    onPlacement={setPreCalculatedPlacement}
+                  >
+                    {renderContent({
+                      ...popperProps,
+                      // Hide the dummy dropdown
+                      style: {
+                        ...popperProps.style,
+                        visibility: 'hidden'
+                      }
+                    })}
+                  </PlacementListener>
+                );
+              }}
+            </Popper>
+          )}
     </TransitionGroup>
-  ) : (
-    <Popper placement={placement}>
-      {popperProps => {
-        return (
-          <PlacementListener
-            placement={popperProps.placement}
-            onPlacement={setPreCalculatedPlacement}
-          >
-            {renderContent({
-              ...popperProps,
-              // Hide the dummy dropdown
-              style: {
-                ...popperProps.style,
-                visibility: 'hidden'
-              }
-            })}
-          </PlacementListener>
-        );
-      }}
-    </Popper>
   );
 
   const renderPortal = typeof window !== 'undefined' && usePortal;
