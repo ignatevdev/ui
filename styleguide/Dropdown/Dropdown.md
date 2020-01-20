@@ -33,7 +33,7 @@ const Counter = () => {
     return timer;
 }
 
-const renderContent = () => <div>Timer is <Counter /></div>;
+const renderContent = () => <div>Timer value is <Counter /></div>;
 
 <Dropdown renderContent={renderContent} opened={opened}>
     <Button onClick={() => setOpened(!opened)}>
