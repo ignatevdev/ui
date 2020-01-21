@@ -1,13 +1,13 @@
 language: node_js
 node_js:
-    - '10'
+  - '10'
 cache: yarn
 install:
-    - yarn
+  - yarn
 jobs:
-    include:
-        - stage: Build and test
-          script:
-              - yarn lint
-              - yarn test
-              - yarn build
+  include:
+    - stage: Build and test
+      script:
+        - yarn lint
+        - yarn test
+        - yarn build
