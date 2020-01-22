@@ -9,12 +9,14 @@ import classNames from 'classnames';
 
 import {getPrefix} from '../../utils';
 
+export type DropdownOptions = PopperChildrenProps;
+
 export interface DropdownProps {
   /** A reference element */
   children: React.ReactNode;
 
   /** A function to render content */
-  renderContent: (options: PopperChildrenProps) => React.ReactNode;
+  renderContent: (options: DropdownOptions) => React.ReactNode;
 
   className?: string;
 
@@ -60,12 +62,12 @@ const Dropdown = (props: DropdownProps) => {
     className
   } = props;
 
+  const prefixCls = getPrefix('dropdown');
+
   // This state stores the calculated posiiton of a dummy dropdown
   const [preCalculatedPlacement, setPreCalculatedPlacement] = React.useState(
     null
   );
-
-  const prefixCls = getPrefix('dropdown');
 
   /*
    * In order for position-based transitions to work,

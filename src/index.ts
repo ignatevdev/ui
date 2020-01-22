@@ -3,3 +3,4 @@ export {
   default as Dropdown,
   DropdownProps
 } from './components/Dropdown/Dropdown';
+export {default as Select, SelectProps} from './components/Select/Select';

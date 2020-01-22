@@ -14,26 +14,20 @@ interface DropdownContentProps extends PopperChildrenProps {
   renderContent: () => React.ReactNode;
 }
 
-const DropdownContent = React.forwardRef<any, any>((props: any, ref?) => {
-  const {style, placement, renderContent} = props;
-
-  return (
-    <Wrapper ref={ref} style={style} data-placement={placement}>
-      <Content>{renderContent()}</Content>
-    </Wrapper>
-  );
-});
-
-DropdownContent.displayName = 'DropdownContent';
-
 const Dropdown = (props: Props) => {
   const {children, renderContent, ...rest} = props;
 
   return (
     <DropdownComponent
-      renderContent={dropdownProps => (
-        <DropdownContent {...dropdownProps} renderContent={renderContent} />
-      )}
+      renderContent={dropdownProps => {
+        const {style, placement, ref} = dropdownProps;
+
+        return (
+          <Wrapper ref={ref} style={style} data-placement={placement}>
+            <Content>{renderContent()}</Content>
+          </Wrapper>
+        );
+      }}
       animationTimeout={animationTimeout}
       {...rest}
     >
