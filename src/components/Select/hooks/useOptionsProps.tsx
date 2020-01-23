@@ -34,10 +34,12 @@ interface OptionContentProps {
 
 const OptionContent = ({
   option,
+  index,
+  prefixCls,
   renderOption,
   selectState
 }: OptionContentProps): any => {
-  const optionProps = useOptionProps({option, selectState});
+  const optionProps = useOptionProps({option, index, prefixCls, selectState});
 
   return renderOption(optionProps, selectState);
 };

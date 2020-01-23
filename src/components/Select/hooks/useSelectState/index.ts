@@ -1,19 +1,10 @@
 import * as React from 'react';
 
-import {Option, Value} from '../../types';
+import {SelectProps, Option} from '../../types';
 
 import useNavigationState from './useNavigationState';
 import useOpenedState from './useOpenedState';
 import useSelectedState from './useSelectedState';
-
-interface SelectStateArgs {
-  options: Option[];
-
-  multiple?: boolean;
-  searchable?: boolean;
-
-  value: Value;
-}
 
 interface InputState {
   inputRef: React.MutableRefObject<HTMLInputElement>;
@@ -28,8 +19,9 @@ const useSelectState = ({
   options,
   multiple,
   searchable,
+  onChange,
   value
-}: SelectStateArgs) => {
+}: SelectProps) => {
   const {opened, openSelect, closeSelect, toggleSelect} = useOpenedState();
   const {
     navigatedIndex,
@@ -44,6 +36,18 @@ const useSelectState = ({
     value,
     multiple
   });
+
+  const applyOption = (option: Option) => {
+    const computedValue = computeNewValue(option);
+
+    if (computedValue.options) {
+      onChange(computedValue.value, computedValue.options);
+    } else {
+      onChange(computedValue.value, computedValue.option);
+
+      closeSelect();
+    }
+  };
 
   const state = {
     searchable,
@@ -64,7 +68,9 @@ const useSelectState = ({
     navigateUp,
     navigateDown,
     navigateToStart,
-    computeNewValue
+    onChange,
+    computeNewValue,
+    applyOption
   };
 
   return {

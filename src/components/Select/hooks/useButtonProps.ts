@@ -4,24 +4,14 @@ import keyCodes from './keyCodes';
 
 import {SelectState} from './useSelectState';
 
-import {onChangeCallback} from '../types';
-
 interface ButtonHookArgs {
-  onChange: onChangeCallback;
-
   selectState: SelectState;
 }
 
-const useButtonProps = ({onChange, selectState}: ButtonHookArgs) => {
+const useButtonProps = ({selectState}: ButtonHookArgs) => {
   const {
     state: {opened, options, navigatedIndex},
-    handlers: {
-      toggleSelect,
-      closeSelect,
-      navigateUp,
-      navigateDown,
-      computeNewValue
-    }
+    handlers: {toggleSelect, closeSelect, navigateUp, navigateDown, applyOption}
   } = selectState;
 
   const getButtonProps = () => ({
@@ -58,13 +48,7 @@ const useButtonProps = ({onChange, selectState}: ButtonHookArgs) => {
             e.preventDefault();
             e.stopPropagation();
 
-            const computedValue = computeNewValue(navigatedOption);
-
-            if (computedValue.options) {
-              onChange(computedValue.value, computedValue.options);
-            } else {
-              onChange(computedValue.value, computedValue.option);
-            }
+            applyOption(navigatedOption);
           }
 
           break;
