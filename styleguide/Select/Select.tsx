@@ -4,7 +4,10 @@ import {SelectProps} from '../../src';
 
 import {
   Wrapper,
-  Control,
+  ButtonControl,
+  InputWrapper,
+  InputControl,
+  InputValue,
   DropdownContent,
   DropdownWrapper,
   animationTimeout
@@ -19,7 +22,8 @@ interface Props {
 
   placeholder: string;
 
-  multiple: boolean;
+  multiple?: boolean;
+  searchable?: boolean;
 
   options: SelectProps['options'];
 }
@@ -27,45 +31,61 @@ interface Props {
 const Select = (props: Props) => {
   const {placeholder, ...rest} = props;
 
+  const renderButton: SelectProps['renderButton'] = (
+    {getButtonProps},
+    {state: {selectedOption, selectedOptions}}
+  ) => {
+    const text = selectedOptions
+      ? selectedOptions.length &&
+        selectedOptions.map(val => val.title).join(', ')
+      : selectedOption && selectedOption.title;
+
+    return (
+      <ButtonControl {...getButtonProps()}>{text || placeholder}</ButtonControl>
+    );
+  };
+
+  const renderOptions: SelectProps['renderOptions'] = ({
+    getOptionsProps,
+    placement
+  }) => {
+    const {children, ...dropdownProps} = getOptionsProps();
+
+    return (
+      <DropdownWrapper {...dropdownProps} data-placement={placement}>
+        <DropdownContent>{children}</DropdownContent>
+      </DropdownWrapper>
+    );
+  };
+
+  const renderOption: SelectProps['renderOption'] = ({
+    option,
+    getOptionProps
+  }) => <div {...getOptionProps()}>{option.title}</div>;
+
+  const renderInput: SelectProps['renderInput'] = (
+    {getInputProps, getInputWrapperProps},
+    {state: {selectedOption}}
+  ) => {
+    return (
+      <InputWrapper {...getInputWrapperProps()}>
+        <InputValue>
+          {selectedOption ? selectedOption.title : placeholder}
+        </InputValue>
+
+        <InputControl {...getInputProps()} placeholder={placeholder} />
+      </InputWrapper>
+    );
+  };
+
   return (
     <Wrapper
       {...rest}
       animationTimeout={animationTimeout}
-      renderButton={({value, ...buttonProps}) => {
-        const text = Array.isArray(value)
-          ? value.length && value.map(val => val.title).join(', ')
-          : value && value.title;
-
-        return <Control {...buttonProps}>{text || placeholder}</Control>;
-      }}
-      renderOptions={({
-        ref,
-        children,
-        placement,
-        style,
-        onMouseDown,
-        onMouseLeave
-      }) => (
-        <DropdownWrapper
-          onMouseDown={onMouseDown}
-          onMouseLeave={onMouseLeave}
-          style={style}
-          ref={ref}
-          data-placement={placement}
-        >
-          <DropdownContent>{children}</DropdownContent>
-        </DropdownWrapper>
-      )}
-      renderOption={({className, onClick, onMouseEnter, option}) => (
-        <div
-          className={className}
-          key={option.value}
-          onClick={onClick}
-          onMouseEnter={onMouseEnter}
-        >
-          {option.title}
-        </div>
-      )}
+      renderInput={renderInput}
+      renderButton={renderButton}
+      renderOptions={renderOptions}
+      renderOption={renderOption}
     />
   );
 };

@@ -5,9 +5,13 @@ import {Select, Button} from '../../src';
 // Make animation more visible
 export const animationTimeout = 400;
 
-export const Wrapper = styled(Select)``;
+export const Wrapper = styled(Select)`
+  .ui-dropdown-reference {
+    display: flex;
+  }
+`;
 
-export const Control = styled(Button)`
+export const ButtonControl = styled(Button)`
   border-radius: 5px;
   border: solid 2px #e3e8f0;
   background: #fff;
@@ -17,6 +21,73 @@ export const Control = styled(Button)`
 
   font-size: 16px;
   color: #3a405b;
+`;
+
+export const InputValue = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 13px;
+  right: 0;
+
+  font-size: 16px;
+  line-height: 16px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  pointer-events: none;
+
+  transform: translate(0, -50%);
+`;
+
+export const InputWrapper = styled.div`
+  border-radius: 5px;
+  border: solid 2px #e3e8f0;
+  background: #fff;
+  padding: 9px 13px;
+  display: flex;
+  align-items: center;
+  width: 200px;
+
+  min-height: 44px;
+  box-sizing: border-box;
+
+  position: relative;
+
+  cursor: pointer;
+
+  font-size: 16px;
+  color: #3a405b;
+
+  &.ui-select-input-wrapper-focused {
+    input {
+      display: block;
+    }
+
+    ${InputValue} {
+      display: none;
+    }
+  }
+`;
+
+export const InputControl = styled.input`
+  display: none;
+
+  font-size: 16px;
+
+  border: none;
+  padding: 0;
+  margin: 0;
+
+  line-height: 16px;
+
+  &::placeholder {
+    font-family: 'Open Sans';
+  }
+
+  &:focus {
+    outline: none;
+  }
 `;
 
 export const DropdownContent = styled.div`

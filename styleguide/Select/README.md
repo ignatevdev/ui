@@ -81,3 +81,43 @@ const options = [
   placeholder="Select multiple values"
 />;
 ```
+
+```jsx
+const [value, setValue] = React.useState(null);
+
+const options = [
+  {
+    title: 'Option zero',
+    value: 0,
+    disabled: true,
+  },
+  {
+    title: 'Option one',
+    value: 1
+  },
+  {
+    title: 'Option two',
+    value: 2,
+    disabled: true
+  },
+  {
+    title: 'Option three',
+    value: 3
+  },
+  {
+    title: 'Option four',
+    value: 4,
+    disabled: true
+  }
+];
+
+<Select
+  value={value}
+  searchable
+  onChange={(value) => {
+    setValue(value);
+  }}
+  options={options}
+  placeholder="Select multiple values"
+/>;
+```

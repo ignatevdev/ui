@@ -6,121 +6,61 @@ import Dropdown, {DropdownOptions} from '../Dropdown/Dropdown';
 
 import {getPrefix} from '../../utils';
 
-import {useOpened, useNavigation} from './hooks/index';
+import {
+  useSelectState,
+  useResetState,
+  useInputProps,
+  useButtonProps,
+  useOptionsProps,
+  SelectState
+} from './hooks';
 
-import {Value, Option, onChangeCallback} from './types.d';
+import {SelectProps} from './types.d';
 
-interface OptionsProps extends DropdownOptions {
-  children: React.ReactNode;
+interface DropdownContentProps extends SelectProps {
+  dropdownOptions: DropdownOptions;
 
-  onMouseDown: (event: React.MouseEvent<HTMLElement>) => void;
-  onMouseLeave: (event: React.MouseEvent<HTMLElement>) => void;
+  selectState: SelectState;
+
+  prefixCls: string;
 }
 
-interface OptionProps {
-  option: Option;
+const DropdownContent = ({
+  renderOptions,
+  renderOption,
+  dropdownOptions,
+  selectState,
+  prefixCls,
+  options
+}: DropdownContentProps): any => {
+  const optionsProps = useOptionsProps({
+    dropdownOptions,
+    renderOption,
+    selectState,
+    prefixCls,
+    options
+  });
 
-  index: number;
-
-  className: string;
-
-  onClick: (event: React.MouseEvent<HTMLElement>) => void;
-  onMouseEnter: (event: React.MouseEvent<HTMLElement>) => void;
-}
-
-interface ControlProps {
-  onClick: (event: React.MouseEvent<HTMLElement>) => void;
-  onBlur: (event: React.MouseEvent<HTMLElement>) => void;
-  onKeyDown: (event: React.KeyboardEvent) => void;
-
-  value: Option | Option[];
-}
-
-export interface SelectProps {
-  className?: string;
-
-  disabled?: boolean;
-
-  options: Option[];
-
-  multiple: boolean;
-
-  value: Value;
-
-  onChange: onChangeCallback;
-
-  renderButton: (props: ControlProps) => React.ReactNode;
-  renderOptions: (props: OptionsProps) => React.ReactNode;
-  renderOption: (props: OptionProps) => React.ReactNode;
-
-  animationTimeout?: number;
-}
+  return renderOptions(optionsProps, selectState);
+};
 
 const Select = (props: SelectProps) => {
   const {
-    value: rawValue,
-    options,
     disabled,
     className,
     animationTimeout,
-    onChange,
+    renderInput,
     renderButton,
-    renderOptions,
-    renderOption,
-    multiple
+    searchable
   } = props;
 
-  const value = multiple ? rawValue || [] : rawValue;
+  const selectState = useSelectState(props);
 
-  const {opened, closeSelect, toggleSelect} = useOpened();
+  useResetState({selectState});
 
-  const optionsByValue = options.reduce(
-    (acc: any, opt: Option) => acc.set(opt.value, opt),
-    new Map()
-  );
-
-  let selectedOption;
-  let selectedOptions;
-
-  if (multiple && Array.isArray(value)) {
-    selectedOptions = value.map(val => optionsByValue.get(val));
-  } else if (value) {
-    selectedOption = options.find(option => option.value === value);
-  }
-
-  const onSelectOption = (option: Option) => {
-    if (multiple) {
-      if (Array.isArray(value) && value.includes(option.value)) {
-        const newValue = value.filter(val => val !== option.value);
-        const newOptions = newValue.map(val => optionsByValue.get(val));
-
-        onChange(newValue, newOptions);
-      } else {
-        const currentOptions = Array.isArray(value)
-          ? (value as Array<string | number>).map(
-              (val): Option => optionsByValue.get(val)
-            )
-          : [];
-
-        const newOptions = [...currentOptions, option];
-        const newValue = newOptions.map(opt => opt.value);
-
-        onChange(newValue, newOptions);
-      }
-    } else {
-      onChange(option.value, option);
-
-      closeSelect();
-    }
-  };
-
-  const {navigatedIndex, setNavigatedIndex, onKeyDown} = useNavigation({
-    opened,
-    closeSelect,
-    options,
-    onSelectOption,
-    selectedOption
-  });
+  const {
+    state: {opened}
+  } = selectState;
 
   const prefixCls = getPrefix('select');
 
@@ -128,87 +68,35 @@ const Select = (props: SelectProps) => {
     [`${prefixCls}-disabled`]: disabled
   });
 
-  const onClick: ControlProps['onClick'] = e => {
-    e.preventDefault();
+  let control;
 
-    toggleSelect();
-  };
+  if (searchable) {
+    const inputProps = useInputProps({prefixCls, selectState});
 
-  const onBlur: ControlProps['onBlur'] = () => {
-    closeSelect();
-  };
+    control = renderInput(inputProps, selectState);
+  } else {
+    const buttonProps = useButtonProps({
+      selectState
+    });
 
-  const onOptionsMouseDown: OptionsProps['onMouseDown'] = e => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const onOptionsMouseLeave: OptionsProps['onMouseLeave'] = () => {
-    setNavigatedIndex(-1);
-  };
+    control = renderButton(buttonProps, selectState);
+  }
 
   return (
     <div className={classes}>
       <Dropdown
         opened={opened}
         animationTimeout={animationTimeout}
-        renderContent={dropdownOptions => {
-          const content = (
-            <div className={`${prefixCls}-options`}>
-              {options.map((option, index) => {
-                let isSelected;
-
-                if (multiple) {
-                  isSelected = (value as Array<string | number>).includes(
-                    option.value
-                  );
-                } else {
-                  isSelected = option.value === value;
-                }
-
-                const isNavigated = navigatedIndex === index;
-
-                const optionClass = classNames(`${prefixCls}-option`, {
-                  [`${prefixCls}-option-disabled`]: option.disabled,
-                  [`${prefixCls}-option-selected`]: isSelected,
-                  [`${prefixCls}-option-navigated`]: isNavigated
-                });
-
-                const onOptionClick: OptionProps['onClick'] = e => {
-                  e.preventDefault();
-
-                  onSelectOption(option);
-                };
-
-                const onOptionMouseEnter = () => {
-                  setNavigatedIndex(index);
-                };
-
-                return renderOption({
-                  option,
-                  index,
-                  className: optionClass,
-                  onClick: option.disabled ? undefined : onOptionClick,
-                  onMouseEnter: option.disabled ? undefined : onOptionMouseEnter
-                });
-              })}
-            </div>
-          );
-
-          return renderOptions({
-            ...dropdownOptions,
-            children: content,
-            onMouseDown: onOptionsMouseDown,
-            onMouseLeave: onOptionsMouseLeave
-          });
-        }}
+        renderContent={dropdownOptions => (
+          <DropdownContent
+            {...props}
+            dropdownOptions={dropdownOptions}
+            selectState={selectState}
+            prefixCls={prefixCls}
+          />
+        )}
       >
-        {renderButton({
-          onClick,
-          onBlur,
-          onKeyDown,
-          value: selectedOption || selectedOptions
-        })}
+        {control}
       </Dropdown>
     </div>
   );
