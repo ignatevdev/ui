@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import {Placement} from 'popper.js';
+import {Placement, Modifiers} from 'popper.js';
 import {CSSTransition, TransitionGroup} from 'react-transition-group';
 import {Manager, Reference, Popper, PopperChildrenProps} from 'react-popper';
 
@@ -23,8 +23,11 @@ export interface DropdownProps {
   opened: boolean;
 
   usePortal?: boolean;
+  eventsEnabled?: boolean;
 
   placement?: Placement;
+
+  modifiers?: Modifiers;
 
   animationTimeout?: number;
 }
@@ -59,7 +62,9 @@ const Dropdown = (props: DropdownProps) => {
     usePortal,
     renderContent,
     animationTimeout,
-    className
+    eventsEnabled,
+    className,
+    modifiers
   } = props;
 
   const prefixCls = getPrefix('dropdown');
@@ -84,7 +89,11 @@ const Dropdown = (props: DropdownProps) => {
               classNames={`${prefixCls}-content`}
               onExited={() => setPreCalculatedPlacement(null)}
             >
-              <Popper placement={placement}>
+              <Popper
+                placement={placement}
+                modifiers={modifiers}
+                eventsEnabled={eventsEnabled}
+              >
                 {popperProps =>
                   renderContent({
                     ...popperProps,
@@ -96,7 +105,11 @@ const Dropdown = (props: DropdownProps) => {
             </CSSTransition>
           )
         : opened && (
-            <Popper placement={placement}>
+            <Popper
+              placement={placement}
+              modifiers={modifiers}
+              eventsEnabled={eventsEnabled}
+            >
               {popperProps => {
                 return (
                   <PlacementListener

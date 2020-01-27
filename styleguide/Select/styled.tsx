@@ -49,15 +49,22 @@ export const InputWrapper = styled.div`
   align-items: center;
   width: 200px;
 
+  position: relative;
+
   min-height: 44px;
   box-sizing: border-box;
-
-  position: relative;
 
   cursor: pointer;
 
   font-size: 16px;
   color: #3a405b;
+
+  &.ui-select-input-wrapper-focused,
+  &:focus {
+    outline: none;
+
+    border-color: #202d75;
+  }
 
   &.ui-select-input-wrapper-focused {
     input {
@@ -130,6 +137,9 @@ export const DropdownContent = styled.div`
 `;
 
 export const DropdownWrapper = styled.div`
+  position: relative;
+  z-index: 2;
+
   &.ui-dropdown-content-enter {
     ${DropdownContent} {
       opacity: 0;

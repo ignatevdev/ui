@@ -8,7 +8,7 @@ interface SelectedOptionHookArguments {
   value: Value;
 }
 
-interface ComputedValue {
+export interface NewComputedValue {
   value: Value;
   option?: Option;
   options?: Option[];
@@ -33,7 +33,7 @@ const useSelectedOption = ({
     selectedOption = options.find(option => option.value === value);
   }
 
-  const computeNewValue = (appliedOption: Option): ComputedValue => {
+  const computeNewValue = (appliedOption: Option): NewComputedValue => {
     if (multiple) {
       if (Array.isArray(value) && value.includes(appliedOption.value)) {
         const newValue = value.filter(val => val !== appliedOption.value);

@@ -43,7 +43,7 @@ const useNavigationState = ({options}: NavigationHookOptions) => {
   const [navigatedIndex, setNavigatedIndex] = React.useState(-1);
 
   const navigateToStart = () => {
-    getFirstAvailableOption(options);
+    setNavigatedIndex(getFirstAvailableOption(options));
   };
 
   const navigateUp = () => {

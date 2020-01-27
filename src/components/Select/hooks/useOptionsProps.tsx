@@ -47,14 +47,25 @@ const OptionContent = ({
 const useOptionsProps = ({
   dropdownOptions,
   selectState,
-  options,
   prefixCls,
   renderOption
 }: OptionsHookArgs) => {
-  const {ref, style, placement, arrowProps} = dropdownOptions;
-  const {handlers} = selectState;
+  const {ref, style, placement, arrowProps, scheduleUpdate} = dropdownOptions;
+  const {
+    state: {options},
+    handlers: {setNavigatedIndex, navigateToStart}
+  } = selectState;
 
-  const {setNavigatedIndex} = handlers;
+  const prevOptions = React.useRef(options);
+
+  React.useEffect(() => {
+    if (prevOptions.current !== options) {
+      prevOptions.current = options;
+
+      scheduleUpdate();
+      navigateToStart();
+    }
+  }, [options]);
 
   const children = (
     <div className={`${prefixCls}-options`}>

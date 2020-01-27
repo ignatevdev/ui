@@ -14,14 +14,20 @@ interface InputHookArgs {
 
 const useInputProps = ({prefixCls, selectState}: InputHookArgs) => {
   const {
-    state: {opened},
-    handlers: {openSelect, closeSelect, navigateUp, navigateDown}
+    state: {opened, options, navigatedIndex, searchValue, inputRef, wrapperRef},
+    handlers: {
+      openSelect,
+      closeSelect,
+      navigateUp,
+      navigateDown,
+      navigateToStart,
+      setSearchValue,
+      applyOption,
+      focusInput
+    }
   } = selectState;
 
   const [focused, setFocused] = React.useState(false);
-
-  const [searchValue, setSearchValue] = React.useState('');
-  const inputRef = React.useRef(null);
 
   const className = `${prefixCls}-input-wrapper`;
 
@@ -49,25 +55,14 @@ const useInputProps = ({prefixCls, selectState}: InputHookArgs) => {
   });
 
   const getInputWrapperProps = () => ({
+    ref: wrapperRef,
     className: classes,
     tabIndex: 0,
     onClick: () => {
       if (inputRef.current) {
         if (!opened) {
-          const interval = setInterval(() => {
-            if (
-              !(
-                inputRef.current.offsetHeight === 0 &&
-                inputRef.current.offsetWidth === 0
-              )
-            ) {
-              inputRef.current.focus();
-              clearInterval(interval);
-            }
-          }, 20);
-
           setFocused(true);
-
+          focusInput();
           openSelect();
         }
       }
@@ -97,17 +92,22 @@ const useInputProps = ({prefixCls, selectState}: InputHookArgs) => {
         }
 
         case keyCodes.ENTER: {
-          const interval = setInterval(() => {
-            if (document.activeElement === inputRef.current) {
-              clearInterval(interval);
-            } else {
-              inputRef.current.focus();
+          if (opened) {
+            const navigatedOption = options[navigatedIndex];
+
+            if (navigatedOption && opened) {
+              e.preventDefault();
+              e.stopPropagation();
+
+              applyOption(navigatedOption);
             }
-          }, 20);
+          } else {
+            setFocused(true);
+            focusInput();
 
-          setFocused(true);
-
-          openSelect();
+            navigateToStart();
+            openSelect();
+          }
 
           break;
         }

@@ -15,7 +15,7 @@ import {
   SelectState
 } from './hooks';
 
-import {SelectProps} from './types.d';
+import {SelectProps} from './types';
 
 interface DropdownContentProps extends SelectProps {
   dropdownOptions: DropdownOptions;

@@ -4,7 +4,8 @@ import {SelectProps, Option} from '../../types';
 
 import useNavigationState from './useNavigationState';
 import useOpenedState from './useOpenedState';
-import useSelectedState from './useSelectedState';
+import useSelectedState, {NewComputedValue} from './useSelectedState';
+import useInputState from './useInputState';
 
 interface InputState {
   inputRef: React.MutableRefObject<HTMLInputElement>;
@@ -22,14 +23,9 @@ const useSelectState = ({
   onChange,
   value
 }: SelectProps) => {
+  const wrapperRef: React.MutableRefObject<HTMLDivElement> = React.useRef(null);
+
   const {opened, openSelect, closeSelect, toggleSelect} = useOpenedState();
-  const {
-    navigatedIndex,
-    setNavigatedIndex,
-    navigateUp,
-    navigateDown,
-    navigateToStart
-  } = useNavigationState({options});
 
   const {computeNewValue, selectedOption, selectedOptions} = useSelectedState({
     options,
@@ -37,8 +33,16 @@ const useSelectState = ({
     multiple
   });
 
+  const {
+    inputRef,
+    searchValue,
+    setSearchValue,
+    filteredOptions,
+    focusInput
+  } = useInputState({options});
+
   const applyOption = (option: Option) => {
-    const computedValue = computeNewValue(option);
+    const computedValue: NewComputedValue = computeNewValue(option);
 
     if (computedValue.options) {
       onChange(computedValue.value, computedValue.options);
@@ -47,7 +51,27 @@ const useSelectState = ({
 
       closeSelect();
     }
+
+    if (searchable) {
+      setSearchValue('');
+
+      if (inputRef.current) {
+        inputRef.current.blur();
+
+        if (wrapperRef.current) {
+          wrapperRef.current.focus();
+        }
+      }
+    }
   };
+
+  const {
+    navigatedIndex,
+    setNavigatedIndex,
+    navigateUp,
+    navigateDown,
+    navigateToStart
+  } = useNavigationState({options: filteredOptions});
 
   const state = {
     searchable,
@@ -55,9 +79,12 @@ const useSelectState = ({
     value,
     multiple,
     navigatedIndex,
-    options,
+    options: filteredOptions,
     selectedOption,
-    selectedOptions
+    selectedOptions,
+    searchValue,
+    wrapperRef,
+    inputRef
   };
 
   const handlers = {
@@ -65,12 +92,14 @@ const useSelectState = ({
     closeSelect,
     toggleSelect,
     setNavigatedIndex,
+    setSearchValue,
     navigateUp,
     navigateDown,
     navigateToStart,
     onChange,
     computeNewValue,
-    applyOption
+    applyOption,
+    focusInput
   };
 
   return {

@@ -73,7 +73,10 @@ const Select = (props: Props) => {
           {selectedOption ? selectedOption.title : placeholder}
         </InputValue>
 
-        <InputControl {...getInputProps()} placeholder={placeholder} />
+        <InputControl
+          {...getInputProps()}
+          placeholder={selectedOption ? selectedOption.title : placeholder}
+        />
       </InputWrapper>
     );
   };

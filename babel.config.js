@@ -12,6 +12,13 @@ const config = {
 switch (NODE_ENV) {
   case 'esm': {
     config.ignore.push(...testsPattern);
+    config.presets.push([
+      '@babel/preset-env',
+      {
+        modules: false
+      }
+    ]);
+    config.presets.push('@babel/preset-react');
 
     break;
   }
@@ -20,6 +27,13 @@ switch (NODE_ENV) {
     // Transform esm to cjs format
     config.plugins.push('@babel/plugin-transform-modules-commonjs');
     config.ignore.push(...testsPattern);
+    config.presets.push([
+      '@babel/preset-env',
+      {
+        modules: 'commonjs'
+      }
+    ]);
+    config.presets.push('@babel/preset-react');
 
     break;
   }
